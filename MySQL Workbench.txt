@@ -1,0 +1,5 @@
+<MySQL Workbench>
+1. 자동 완성 설정 
+edit -  preferences - SQL Editor - Query Editor - use UPPERCASE keywords on completion 선택
+
+ctrl+space
