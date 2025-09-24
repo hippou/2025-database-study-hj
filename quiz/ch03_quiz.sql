@@ -6,7 +6,7 @@
 -- 다음 쿼리의 결과로 조회되는 데이터는 무엇입니까?
 
 SELECT name, price
-FROM products
+FROM products 
 WHERE price > 100000 AND price <= 500000;
 
 -- ① 가격이 100,000원 초과 500,000원 이하인 제품
@@ -148,7 +148,7 @@ WHERE NOT(category = '전자기기');
 -- 재고가 10개 이하인 제품 중 가격을 20% 할인해 제품명과 가격을 조회하세요.
 
 -- 정답:
-SELECT name,price, price/1.2 AS `할인가격(20%)`
+SELECT name,price, price*0.8 AS `할인가격(20%)`
 FROM products 
 WHERE stock <= 10;
 
@@ -167,7 +167,7 @@ WHERE (category = '생활용품' AND price >= 100000) OR stock >= 50;
 -- 해당 제품의 제품명, 재고, 할인된 가격을 조회하세요.
 
 -- 정답:
-SELECT name, stock, price/1.3 AS `할인된 가격(30%)`
+SELECT name, stock, price*0.7 AS `할인된 가격(30%)`
 FROM products
 WHERE category = '전자기기' AND stock <= 10;
 
