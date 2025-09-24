@@ -24,27 +24,28 @@ WHERE kcal < 500 OR protein >= 25;
 -- ---------------------
 -- 버거 이름  | 100g당 가격
 -- ---------------------
-SELECT name, (price/gram)*100 AS `100g당 가격`
+SELECT name AS `버거 이름`, (price/gram)*100 AS `100g당 가격`
 FROM burgers;
 -- 4. 100g당 가격이 2500원 미만인 버거를 다음과 같이 조회하세요.
 -- --------------------------------------------
 -- 버거 이름  | 가격      | 무게(g)    | 100g당 가격
 -- --------------------------------------------
-SELECT name, price, gram, (price/gram)*100 AS `100g당 가격`
-FROM burgers;
+SELECT name AS `버거 이름`, price AS `가격`, gram AS `무게(g)`, (price/gram)*100 AS `100g당 가격`
+FROM burgers
+WHERE (price/gram)*100 < 2500;
 -- 5. 1000원당 들어 있는 단백질량을 계산해 다음과 같이 조회하세요.
 -- -------------------------
 -- 버거 이름  | 1000원당 단백질량
 -- -------------------------
-SELECT name, (protein*1000)/price AS `1000원당 단백질량`
+SELECT name AS `버거 이름`, (protein / price)*1000 AS `1000원당 단백질량`
 FROM burgers;
 -- 6. 1000원당 들어 있는 단백질량이 5 이상인 버거를 다음과 같이 조회하세요.
 -- -------------------------
 -- 버거 이름  | 1000원당 단백질량
 -- -------------------------
-SELECT name, (protein*1000)/price AS `1000원당 단백질량`
+SELECT name AS `버거 이름`, (protein / price )*1000 AS `1000원당 단백질량`
 FROM burgers
-WHERE (protein*1000)/price >= 5;
+WHERE (protein / price )*1000 >= 5;
 
 -- 현재 DB 확인
 SELECT DATABASE();
