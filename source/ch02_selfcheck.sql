@@ -25,7 +25,7 @@ id INT PRIMARY KEY,
 name VARCHAR(20), 
 price INT); 
 -- 3 coffees 테이블에 아메리카노부터 카푸치노까지 모든 데이터를 삽입하세요.
-INSERT into coffees
+INSERT into coffees (id, name, price)
 VALUES
 (1, '아메리카노', 3800),
 (2, '카페라떼', 4000),
@@ -33,10 +33,11 @@ VALUES
 (4, '카페모카', 4500),
 (5, '카푸치노', 5000); 
 -- 4 coffees 테이블의 모든 커피 이름을 조회하세요.
-SELECT name FROM coffees;
+SELECT name 
+FROM coffees;
 -- 5 카푸치노의 가격을 200원 인상하세요.(연산식 사용 가능)
 UPDATE coffees
-SET price = 5200
+SET price = price+200 
 WHERE id = 5;
 -- 6 콜드브루를 삭제하세요.
 DELETE FROM coffees

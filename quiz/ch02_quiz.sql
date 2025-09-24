@@ -9,7 +9,6 @@ USE quiz;
 -- name(직원명), department(부서), position(직책)은 최대 50자를 저장하는 문자형
 -- 기본키는 id로 지정합니다.
 
-
 -- 정답:
 CREATE TABLE employees (
 id INT PRIMARY KEY,
@@ -23,7 +22,7 @@ salary INT
 -- employees 테이블에 모든 직원 정보를 삽입하세요.
 
 -- 정답:
-INSERT into employees 
+INSERT into employees (id,name,department,position,salary)
 VALUES
 (1, '김철수', '개발', '사원', 3500000),
 (2, '박영희', '개발', '대리', 4200000),
@@ -35,6 +34,9 @@ VALUES
 (8, '이은지', '마케팅', '사원', 3200000),
 (9, '안현준', '개발', '팀장', 5800000),
 (10, '홍길동', '영업', '사원', 3000000);
+
+
+
 
 
 
@@ -69,20 +71,22 @@ SELECT name, department from employees where position='팀장';
 -- ※ 이후 문제 6 ~ 7번은 안전모드를 해제하고 실행한 후 다시 안전모드를 활성하세요.
 SELECT @@sql_safe_updates;
 SET SQL_SAFE_UPDATES = 0;
+SET SQL_SAFE_UPDATES = 1;
 -- 문제 6
 -- '영업' 부서의 모든 직원 급여를 300,000원씩 인상하세요.
 
 -- 정답:
 UPDATE employees
-SET salary = salary+300000;
+SET salary = salary+300000
+WHERE department = '영업';
 
 select * from employees;
 -- 문제 7
--- 급여가 3,000,000원 이하인 직원을 삭제하세요.
+-- 급여가 3,200,000원 이하인 직원을 삭제하세요.
 
 -- 정답:
 DELETE from employees 
-WHERE salary <= 3000000;
+WHERE salary <= 3200000;
 
 
 
