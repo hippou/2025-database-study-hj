@@ -29,6 +29,15 @@
 -- 세부 타입이 존재: 차지하는 메모리 크기에 따른 분류
 -- 종류: TINYINT, SMALLINT, MEDIUMINT, INTEGER(또는 INT)*, BIGINT
 
+-- UNSIGNED(언사인드) 제약 조건 부여 가능: 음수 값을 허용하지 않는 정수 
+-- 유효성 보장: 나이는 0~255의 유효한 값만 저장 
+CREATE TABLE users (
+  age TINYINT UNSIGNED 
+);
+-- 안전성 보장: 재고는 음수가 될 수 없음 
+CREATE TABLE products (
+  stock INT UNSIGNED
+);
 
 -- 2) 실수형
 -- 소수점을 포함하는 수 저장: 3.14, -9.81, ...
@@ -66,6 +75,41 @@ CREATE DATABASE data_type;
 USE data_type;
 SELECT DATABASE(); -- 확인
 
+-- 학생 기록 (student_records) 테이블 생성
+CREATE TABLE student_records( 
+	id INT, -- 아이디 (표준 정수)
+    grade TINYINT UNSIGNED, -- 학년(부호가 없는 매우 작은 정수), 0~255
+    average_score FLOAT, -- 평균 점수 (부동 소수점 방식의 실수)
+    tuition_fee DECIMAL(8,2), -- 수업료(고정 소수점 방식의 실수), 돈계산 관련은 정확하게, 전체 10자리, 소수점 이하 2자리 
+    PRIMARY KEY(id)
+);
+
+-- 학생 기록 데이터 삽입 
+INSERT INTO 
+	student_records (id, grade, average_score, tuition_fee)
+VALUES
+ (1, 3, 88.75, 50000.00),
+ (2, 6, 92.5, 100000.00);
+ 
+-- 데이터 조회
+SELECT *
+FROM student_records;
+
+-- grade 컬럼에 자료형 범위를 벗어난 값을 입력
+INSERT INTO 
+	student_records (id, grade, average_score, tuition_fee)
+VALUES
+ (3, -2, 66.5, 20.00);
+ 
+INSERT INTO 
+	student_records (id, grade, average_score, tuition_fee)
+VALUES
+ (4, 256, 66.5, 20.00);
+ 
+INSERT INTO 
+	student_records (id, grade, average_score, tuition_fee)
+VALUES
+ (5, 2, 66.5, 200000000000.00);
 
 
 -- 2. 문자형
@@ -90,6 +134,17 @@ SELECT DATABASE(); -- 확인
 -- 성별 코드('M'/'F')나 우편번호, 국가 코드('KR'/'US')처럼 항상 길이가 정해져 있는 데이터에 사용하면, VARCHAR 보다 아주 약간의 이점을 가질 수 있음
 -- 길이가 항상 같으니, 데이터를 찾기 위해 길이를 확인할 필요가 없기 때문
 
+-- CHAR와 VARCHAR 자료형의 사용예 
+CREATE TABLE addresses (
+	post_code CHAR(5), -- 우편번호(고정 길이 문자: 5자)
+    -- 문자를 3개만 넣는 경우, 자동으로 공백 문자를 채움(예: 'abc ')
+    street_address VARCHAR(100) -- 도로명 주소 (가변 길이 문자: 최대 100자)
+    -- 최대 100글자 저장 가능하지만, 사용 메모리는 입력된 문자만큼만 사용(예: 'abc') 
+);
+
+-- 실무에서는 보편적으로 VARCHAR 사용
+-- 과거에는 "길이가 고정적이면 CHAR, 가변적이면 VARCHAR" 라는 원칙이 강조되었지만, 
+-- 현재 빨라진 환경에서는 VARCHAR를 우선적으로 고려
 
 -- 2) TEXT
 -- 긴 문자열 저장을 위한 타입
@@ -106,6 +161,14 @@ CREATE TABLE articles (
     content MEDIUMTEXT, -- 본문(최대 16MB)
     additional_info LONGTEXT -- 추가 정보(최대 4GB)
 );
+
+-- (참고)
+-- 자바 웹 개발을 포함한 대부분의 애플리케이션에서는 이미지나 동영상 같은 대용량 파일을 
+-- 데이터베이스에 직접 저장하지 않고, 클라우드 스토리지나 파일 서버 등에 저장한 뒤, 
+-- 그 경로나 URL만 데이터베이스에 저장하는 방식이 사실상 표준
+
+-- 왜 DB에 직접 저장하지 않을까? 
+-- DB부하가 큼, 성능이 느림, 백업/복구 어려움 등 
 
 
 -- 3) BLOB(잘 쓰지 않음)
@@ -141,7 +204,14 @@ CREATE TABLE memberships (
 -- 2     | hongsoon@example.com  | 098-7654-3210  | 반갑습니다요!  | NULL      | 여
 
 -- Quiz: 사용자 프로필(user_profiles) 테이블 생성
-
+CREATE TABLE user_profiles(
+ id INT PRIMARY KEY, -- 아이디(표준 정수)
+ email VARCHAR(255), -- 이메일(가변 길이 문자: 최대 255자)
+ phone_number CHAR(13), -- 전화번호(고정 길이 문자: 13자)
+ self_introduction TEXT, -- 자기소개(긴 문자열: 최대 64KB)
+ profile_picture MEDIUMBLOB, -- 프로필 사진(파일: 최대 16MB)
+ gender ENUM ('남','여') -- 성별(선택 목록 중 택 1)
+);
 
 -- 3. 날짜 및 시간형
 -- 날짜와 시간 값 저장을 위한 타입
@@ -191,5 +261,47 @@ CREATE TABLE memberships (
 -- 222   | Art Exhibition  | 2024-11-15  | 12:00:00   | 2024-09-05 11:30:00  | 2024
 
 -- Quiz: 이벤트(events) 테이블 생성
+CREATE TABLE events (
+	id INT, 			        -- 아이디(표준 정수)
+	event_name VARCHAR(100) , 	-- 이벤트명(가변 길이 문자: 최대 100자)
+	event_date DATE , 	        -- 이벤트 일자(YYYY-MM-DD)
+	start_time TIME , 			-- 이벤트 시간(hh:mm:ss)
+	created_at DATETIME , 		-- 이벤트 등록 일시(YYYY-MM-DD hh:mm:ss)
+	event_year YEAR, 			-- 이벤트 연도(YYYY)
+	PRIMARY KEY (id) 			-- 기본키 지정: id
+);
 
+
+-- 이벤트(events) 데이터 삽입
+INSERT INTO 
+	events (id, event_name, event_date, start_time, created_at, event_year)
+VALUES
+	(111, 'Music Festival', '2024-10-04', '17:55:00', '2024-09-04 10:25:30', '2024'),
+	(222, 'Art Exhibition', '2024-11-15', '12:00:00', '2024-09-05 11:30:00', '2024');
+    
+-- 데이터 조회
+SELECT *
+FROM events;
+
+-- Quiz
+-- 1. 다음은 orders(주문)테이블을 생성하는 쿼리이다. 바르게 설명한 것을 모두 고르세요.
+
+CREATE TABLE orders (
+	id INTEGER,              -- 아이디
+	name VARCHAR (255), 	 -- 상품명
+	price DECIMAL(10, 2),    -- 가격
+	quantity INTEGER,        -- 주문 수량
+	customer_name CHAR(100), -- 고객명
+	shipping_address TEXT,   -- 배송 주소
+	created_at DATETIME,     -- 주문 일시
+	PRIMARY KEY (id)
+);
+
+-- ① id는 기본키로 선언됐다.
+-- ② name은 최대 255자까지 저장할 수 있다.
+-- ③ price에 저장할 수 있는 최댓값은 9,999,999,999이다.
+-- ④ customer_name이 100자보다 짧으면, 고객명을 저장하고 남은 만큼의 메모리 공간이 절약된다.
+-- ⑤ created_at에는 날짜와 시간 값을 모두 저장할 수 있다.
+
+-- 정답: 1, 2, 5
 

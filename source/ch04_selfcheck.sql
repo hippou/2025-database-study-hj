@@ -53,10 +53,10 @@ SELECT AVG(salary)
 FROM employees
 WHERE department = 'Sales';
 -- 5. 부서가 모두 몇 개 있는지 조회하세요.
-SELECT COUNT(department)
+SELECT COUNT(DISTINCT department)
 FROM employees;
 -- 6. Sales 부서의 최대 연봉과 최소 연봉 차이를 구하세요.
-SELECT MAX(salary), MIN(salary)
+SELECT MAX(salary) - MIN(salary)
 FROM employees
 WHERE department = 'Sales';
 -- 7. 가장 높은 연봉을 받는 직원은 전체 평균 연봉 대비 얼마를 더 받는지 구하세요.
