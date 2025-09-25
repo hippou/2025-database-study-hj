@@ -178,3 +178,105 @@ SELECT 3 + 5 * 2; -- 13
 SELECT (3 + 5) * 2; -- 16
 SELECT TRUE OR TRUE AND FALSE;  -- 1
 SELECT (TRUE OR TRUE) AND FALSE; -- 0
+
+
+-- Quiz
+-- 1. 다음 빈칸에 들어갈 용어는? (입력 예: ㄱㄴㄷㄹㅁ)
+-- ① __________: 테이블 조회 시 필터링 조건을 작성하기 위해 사용하는 명령 
+-- ② __________: 같지 않음을 비교하는 연산자
+-- ③ __________: 두 조건을 동시에 만족하는 논리 연산자
+-- ④ __________: 두 조건 중 하나라도 만족하는 논리 연산자
+-- ⑤ __________: 특정 조건을 만족하지 않는 논리 연산자
+
+-- (ㄱ) AND
+-- (ᄂ) !=
+-- (ᄃ) NOT
+-- (ᄅ) WHERE
+-- (ᄆ) OR
+
+-- 정답: (ㄹ) - (ㄴ) - (ㄱ) - (ㅁ) - (ㄷ)
+
+
+
+/*
+	3.2 데이터 필터링 실습: 대학 DB
+*/
+
+-- Quiz: 대학 DB 만들기
+-- university DB 생성 및 진입
+CREATE DATABASE university;
+USE university;
+
+CREATE TABLE students (
+  id INT PRIMARY KEY,
+  nickname VARCHAR(50), 
+  math INT, 
+  english INT, 
+  programming INT
+);
+
+-- students 테이블 생성
+-- id: 아이디(정수형 숫자)
+-- nickname: 닉네임(문자형: 최대 50자)
+-- math: 수학 성적(정수형 숫자)
+-- english: 영어 성적(정수형 숫자)
+-- programming: 프로그래밍 성적(정수형 숫자)
+-- 기본키 지정: id
+
+-- students 데이터 삽입
+ INSERT into students (id, nickname, math, english, programming)
+ VALUES
+	(1, 'Sparkles', 98, 96, 93),
+	(2, 'Soldier', 82, 66, 98),
+	(3, 'Lapooheart', 84, 70, 82),
+	(4, 'Slick', 87, 99, 98),
+	(5, 'Smile', 75, 73, 70),
+	(6, 'Jellyboo', 84, 82, 70),
+	(7, 'Bagel', 97, 91, 87),
+	(8, 'Queen', 99, 100, 88);
+
+SELECT * FROM students;
+
+-- Quiz: 필터링 연습!
+-- 1. 모든 과목 성적이 90점 이상인 학생은?
+SELECT * 
+FROM students
+WHERE math >=90 AND english >= 90 AND programming >= 90; -- Sparkles
+
+-- 2. 75점 미만이 하나라도 있는 학생은?
+SELECT * 
+FROM students
+WHERE math < 75 OR english < 75 OR programming < 75; -- Soldier, Lapooheart, Smile, Jellyboo
+
+-- 3. 모든 학생의 총점은?
+SELECT *, (math+english+programming) as `total` 
+FROM students;
+-- 4. 모든 학생의 평균은?
+SELECT *, (math+english+programming)/3 as `average`
+FROM students;
+-- 5. 총점이 270 이상인 학생의 닉네임, 총점, 평균은?
+SELECT nickname, (math+english+programming) as `total` , (math+english+programming)/3 as `average`
+FROM students
+WHERE (math+english+programming) >= 270;
+
+-- 별칭 부여하기: AS 키워드
+-- SELECT 컬럼명 AS 별칭
+-- FROM 테이블명;
+
+-- 별칭 사용 시, 공백 또는 특수 문자 등이 필요한 경우
+-- 별칭을 따옴표("", '') 또는 백틱(``)으로 감싸야 함
+
+-- Quiz
+-- 2. 다음 쿼리에 대한 설명으로 옳지 않은 것을 모두 고르면?
+SELECT id, nickname, (math + english + programming) / 3 AS '중간고사 평균' 
+FROM students
+WHERE math > 80 AND programming > 80 OR english > 90;
+
+-- ① students 테이블에서 데이터를 조회하고 있다.
+-- ② math가 80보다 높은 학생은 반드시 조회된다.
+-- ③ english가 90보다 높은 학생은 조회될 수 있다.
+-- ④ 이 쿼리를 실행하면 그 결과로 컬럼 3개가 조회된다.
+-- ⑤ SELECT 절의 '(math + english + programming) / 3' 수식에 괄호를 삭제하고 조회해도 정상적으로 중간고사 평균이 계산된다.
+
+-- 정답: 2,5
+
