@@ -225,3 +225,36 @@ WHERE amount > 0;
 SELECT AVG(amount)
 FROM transactions
 WHERE msg IN('Google','Amazon') AND amount > 0;
+
+-- 거래처 목록 조회하기
+SELECT msg
+FROM transactions;
+-- 거래처를 담은 msg만 조회하면? 중복된 결과가 나옴
+
+-- 중복을 제거하여 조회하려면? DISTINCT 중복제거 키워드를 적용
+/*SELECT DISTINCT 컬럼명
+FROM 테이블명;*/
+
+SELECT DISTINCT(msg)
+FROM transactions;
+
+-- 거래처 목록이 아닌 거래처의 수를 조회한다면?
+SELECT COUNT(DISTINCT msg)
+FROM transactions;
+
+
+-- Quiz
+-- 2. 다음 빈칸에 들어갈 용어를 차례로 고르면? (예: ㄱㄴㄷㄹㅁ)
+-- ① __________: 소수점을 포함한 고정 길이의 숫자를 나타내는 자료형
+-- ② __________: YYYY-MM-DD hh:mm:ss 형식으로 날짜와 시간을 나타내는 자료형
+-- ③ __________: 평균을 계산하는 함수
+-- ④ __________: 주어진 목록 값 중 하나에 해당하는지 확인해 주는 연산자
+-- ⑤ __________: 중복을 제거하여 유일한 값만 남기는 키워드
+
+-- (ㄱ) IN
+-- (ㄴ) DATETIME
+-- (ㄷ) DISTINCT
+-- (ㄹ) AVG()
+-- (ㅁ) DECIMAL
+
+-- 정답: (ㅁ) - (ㄴ) - (ㄹ) - (ㄱ) - (ㄷ)
