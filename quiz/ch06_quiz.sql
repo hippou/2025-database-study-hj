@@ -5,12 +5,12 @@
 -- 문제 1
 -- 다음 중 일대다 관계에 해당하는 예는 무엇입니까?
 
--- ① 국가와 수도
--- ② 부모와 자식
--- ③ 학생과 수강 과목
--- ④ 책과 ISBN 번호
+-- ① 국가와 수도: 일대일
+-- ② 부모와 자식: 일대다
+-- ③ 학생과 수강 과목: 다대다
+-- ④ 책과 ISBN 번호: 일대일
 
--- 정답: 
+-- 정답: 2
 
 
 -- 문제 2
@@ -21,7 +21,7 @@
 -- ③ 새 행이 삽입될 때마다 값을 1씩 자동으로 증가한다.
 -- ④ 칼럼 값이 음수를 허용하지 않도록 제한한다.
 
--- 정답: 
+-- 정답: 3
 
 
 -- 문제 3
@@ -34,7 +34,7 @@ discount_rate INTEGER CHECK (discount_rate >= 0 AND discount_rate <= 50);
 -- ③ 25
 -- ④ 50
 
--- 정답: 
+-- 정답: 1
 
 
 -- 문제 4
@@ -45,7 +45,7 @@ discount_rate INTEGER CHECK (discount_rate >= 0 AND discount_rate <= 50);
 -- ③ 특정 칼럼 값이 중복되지 않도록 보장하기 위해
 -- ④ 칼럼 값이 자동으로 증가하도록 설정하기 위해
 
--- 정답: 
+-- 정답: 3
 
 
 -- 2. 관계 만들기 연습 문제
@@ -59,54 +59,54 @@ discount_rate INTEGER CHECK (discount_rate >= 0 AND discount_rate <= 50);
 
 -- members 테이블
 CREATE TABLE members (
-	id INTEGER, -- ID(자동 증가)
-	name VARCHAR(50), -- 회원명(NULL 불가)
-	email VARCHAR(100), -- 이메일(고유 값)
+	id INTEGER AUTO_INCREMENT, -- ID(자동 증가)
+	name VARCHAR(50) NOT NULL, -- 회원명(NULL 불가)
+	email VARCHAR(100) UNIQUE, -- 이메일(고유 값)
 	phone_number CHAR(15), -- 전화번호
-	membership_status VARCHAR(20), -- 회원 상태(기본값: active)
-	 -- 기본키 지정: id
+	membership_status VARCHAR(20) DEFAULT 'active', -- 회원 상태(기본값: active)
+	PRIMARY KEY (id) -- 기본키 지정: id
 );
 
 -- member_profiles 테이블
 CREATE TABLE member_profiles (
-	id INTEGER, -- ID(자동 증가)
+	id INTEGER AUTO_INCREMENT, -- ID(자동 증가)
 	date_of_birth DATE, -- 생년월일
 	address TEXT, -- 주소
-	member_id INTEGER, -- 회원_ID(고유 값)
-	, -- 기본키 지정: id
-	 -- 외래키 지정: member_id
+	member_id INTEGER UNIQUE, -- 회원_ID(고유 값)
+	PRIMARY KEY (id), -- 기본키 지정: id
+	FOREIGN KEY (member_id) REFERENCES members(id) -- 외래키 지정: member_id
 );
 
 -- books 테이블
 CREATE TABLE books (
-	id INTEGER, -- ID(자동 증가)
-	title VARCHAR(100), -- 도서명(NULL 불가)
+	id INTEGER AUTO_INCREMENT, -- ID(자동 증가)
+	title VARCHAR(100) NOT NULL, -- 도서명(NULL 불가)
 	author VARCHAR(100), -- 저자
 	category VARCHAR(50), -- 카테고리
-	stock INTEGER, -- 재고(음수 불가, 기본값: 0)
-	 -- 기본키 지정: id
+	stock INTEGER UNSIGNED DEFAULT 0, -- 재고(음수 불가, 기본값: 0)
+	PRIMARY KEY (id) -- 기본키 지정: id
 );
 
 -- borrow_records 테이블
 CREATE TABLE borrow_records (
-	id INTEGER, -- ID(자동 증가)
-	borrow_date DATE, -- 대출 날짜(NULL 불가)
+	id INTEGER AUTO_INCREMENT, -- ID(자동 증가)
+	borrow_date DATE NOT NULL, -- 대출 날짜(NULL 불가)
 	return_date DATE, -- 반납 날짜
-	member_id INTEGER, -- 회원_ID(NULL 불가)
-	book_id INTEGER, -- 도서_ID(NULL 불가)
-	 -- 기본키 지정: id
-	 -- 외래키 지정: member_id
-	 -- 외래키 지정: book_id
+	member_id INTEGER NOT NULL, -- 회원_ID(NULL 불가)
+	book_id INTEGER NOT NULL, -- 도서_ID(NULL 불가)
+	PRIMARY KEY (id), -- 기본키 지정: id
+	FOREIGN KEY (member_id) REFERENCES members(id), -- 외래키 지정: member_id
+	FOREIGN KEY (book_id) REFERENCES books(id) -- 외래키 지정: book_id
 );
 
 -- library_staff 테이블
 CREATE TABLE library_staff (
-	id INTEGER, -- ID(자동 증가)
-	name VARCHAR(50), -- 직원명(NULL 불가)
-	role VARCHAR(50), -- 역할(기본값: staff)
-	employment_date DATE, -- 고용 날짜(NULL 불가)
-	salary INTEGER, -- 급여(음수 불가, CHECK 제약 조건 사용)
-	 -- 기본키 지정: id
+	id INTEGER AUTO_INCREMENT, -- ID(자동 증가)
+	name VARCHAR(50) NOT NULL, -- 직원명(NULL 불가)
+	role VARCHAR(50) DEFAULT 'staff', -- 역할(기본값: staff)
+	employment_date DATE NOT NULL, -- 고용 날짜(NULL 불가)
+	salary INTEGER UNSIGNED CHECK (salary >= 0), -- 급여(음수 불가, CHECK 제약 조건 사용)
+	PRIMARY KEY (id) -- 기본키 지정: id
 );
 
 
@@ -118,7 +118,7 @@ CREATE TABLE library_staff (
 -- ③ NOT NULL
 -- ④ DEFAULT
 
--- 정답: 
+-- 정답: 2
 
 
 -- 문제 2
@@ -129,7 +129,7 @@ CREATE TABLE library_staff (
 -- ③ 회원의 생년월일을 저장하는 칼럼
 -- ④ 회원의 이메일을 저장하는 칼럼
 
--- 정답: 
+-- 정답: 2
 
 
 -- 문제 3
@@ -140,7 +140,7 @@ CREATE TABLE library_staff (
 -- ③ -10
 -- ④ NULL
 
--- 정답: 
+-- 정답: 3
 
 
 -- 문제 4
@@ -151,7 +151,7 @@ CREATE TABLE library_staff (
 -- ③ member_profiles 테이블
 -- ④ library_staff 테이블
 
--- 정답: 
+-- 정답: 1
 
 
 -- 문제 5
@@ -162,7 +162,7 @@ CREATE TABLE library_staff (
 -- ③ -5000
 -- ④ 5000
 
--- 정답: 
+-- 정답: 3
 
 
 -- 문제 6
@@ -173,7 +173,7 @@ CREATE TABLE library_staff (
 -- ③ 다른 테이블의 값을 참조
 -- ④ 칼럼 값이 항상 고유하도록 설정
 
--- 정답: 
+-- 정답: 2
 
 
 -- 문제 7
@@ -184,7 +184,7 @@ CREATE TABLE library_staff (
 -- ③ id
 -- ④ borrow_date
 
--- 정답: 
+-- 정답: 3
 
 
 -- 문제 8
@@ -195,7 +195,7 @@ CREATE TABLE library_staff (
 -- ③ 회원 프로필과 도서 대출 기록을 연결하기 위해
 -- ④ 회원 테이블과의 1:1 관계를 유지하기 위해
 
--- 정답: 
+-- 정답: 4
 
 
 -- 문제 9
@@ -206,7 +206,7 @@ CREATE TABLE library_staff (
 -- ③ 직원
 -- ④ staff
 
--- 정답: 
+-- 정답: 4
 
 
 -- 문제 10
@@ -217,5 +217,5 @@ CREATE TABLE library_staff (
 -- ③ 회원과 도서 간의 다대다 관계
 -- ④ 도서와 직원 간의 관계
 
--- 정답: 
+-- 정답: 3
 
