@@ -12,7 +12,7 @@ CREATE TABLE employees (
 	PRIMARY KEY (id)
 );
 
--- 정답: 
+-- 정답: SMALLINT는 2바이트로 메모리를 절약하면서 65,535까지의 정수를 저장할 수 있기 때문 
 
 
 -- 문제 2
@@ -24,7 +24,7 @@ CREATE TABLE products (
 	...
 );
 
--- 정답: 
+-- 정답: 최대 5자리 실수를 저장하며, 소수점 이하 2자리를 포함
 
 
 -- 문제 3
@@ -37,6 +37,11 @@ CREATE TABLE users (
 );
 
 -- 정답: 
+-- VARCHAR(50)과 CHAR(50)은 문자 50자를 저장할 수 있는 공간을 제공함 
+-- VARCHAR(50): 최대 50자의 가변 길이 문자열을 저장할 수 있으며, 
+-- 실제 저장된 문자열 길이에 따라 메모리를 사용해 공간 낭비를 줄임 
+-- CHAR(50): 최대 50자의 고정 길이 문자열을 저장하며, 
+-- 데이터 길이와 상관없이 항상 50자 공간을 사용함
 
 
 -- 문제 4
@@ -49,7 +54,7 @@ CREATE TABLE events (
 	...
 );
 
--- 정답: 
+-- 정답: DATE는 날짜만 저장 DATETIME은 날짜와 시간을 모두 저장 
 
 
 -- 문제 5
@@ -61,7 +66,7 @@ CREATE TABLE employees (
 	...
 );
 
--- 정답: 
+-- 정답: ENUM은 제한된 값 목록만 저장하도록 강제할 수 있다. 
 
 
 -- 문제 6
@@ -73,7 +78,7 @@ CREATE TABLE files (
 	...
 );
 
--- 정답: 
+-- 정답: 이미지, 오디오, 동영상 같은 크기가 큰 파일을 저장하는데 적합
 
 
 -- 문제 7
@@ -86,7 +91,8 @@ CREATE TABLE measurements (
 	...
 );
 
--- 정답:
+-- 정답: FLOAT은 4바이트 DOUBLE은 8바이트를 차지 
+-- 따라서 DOUBLE은 FLOAT보다 넓은 범위의 실수를 저장해 좀 더 정밀하게 표현
 
 
 -- 문제 8
@@ -97,8 +103,7 @@ CREATE TABLE schedules ( id INTEGER,
 	...
 );
 
--- 정답: 
-
+-- 정답: '1000-01-01' ~ '9999-12-31'
 
 -- 2. LIKE 연산자, 날짜/시간 함수, BETWEEN 연산자 확인 문제
 
@@ -107,7 +112,7 @@ CREATE TABLE schedules ( id INTEGER,
 -- 문제 1
 -- LIKE 연산자를 사용할 때 _(언더스코어)의 역할은 무엇입니까?
 
--- 정답: 
+-- 정답: _정확히 임의의 한 글자를 대체한다. 
 
 
 -- 문제 2
@@ -115,13 +120,13 @@ CREATE TABLE schedules ( id INTEGER,
 
 WHERE customer_name LIKE '박__';
 
--- 정답: 
+-- 정답: customer_name이 박00 3글자로 되어있는걸 찾음
 
 
 -- 문제 3
 -- 날짜에서 월을 추출하는 함수는 무엇입니까?
 
--- 정답: 
+-- 정답: MONTH()
 
 
 -- 문제 4
@@ -129,7 +134,7 @@ WHERE customer_name LIKE '박__';
 
 -- SELECT EXTRACT(DAY FROM '2024-01-15');
 
--- 정답: 
+-- 정답: 15
 
 
 -- 문제 5
@@ -137,7 +142,7 @@ WHERE customer_name LIKE '박__';
 
 -- SELECT HOUR('15:45:20');
 
--- 정답: 
+-- 정답: 15시
 
 
 -- 문제 6
@@ -147,7 +152,7 @@ WHERE customer_name LIKE '%현%';
 
 -- [보기] 안현준, 현철수, 박영희, 정수현, 김준호
 
--- 정답: 
+-- 정답: 안현준, 현철수, 정수현
 
 
 -- 문제 7
@@ -155,7 +160,7 @@ WHERE customer_name LIKE '%현%';
 
 WHERE HOUR(order_time) BETWEEN 9 AND 17;
 
--- 정답: 
+-- 정답: order_time의 시간이 9시에서 17사이를 찾아라 (두값 모두 포함) 
 
 
 -- 3. 자료형에 따른 필터링 연습 문제
@@ -193,6 +198,9 @@ VALUES
 -- 이벤트 제목에 '워크숍'이 포함된 이벤트의 제목과 장소를 조회하세요.
 
 -- 정답: 
+SELECT title, location
+FROM events 
+WHERE title LIKE '%워크숍%';
 
 
 
@@ -200,19 +208,27 @@ VALUES
 -- 이벤트 제목이 '데이터'로 시작하는 이벤트의 제목과 참석자 수를 조회하세요. 
 
 -- 정답:
-
+SELECT title, attendees
+FROM events 
+WHERE title LIKE '데이터%';
 
 
 -- 문제 3
 -- 이벤트 날짜가 2023년인 이벤트의 제목과 날짜를 조회하세요.
 
 -- 정답:
+SELECT title, event_date
+FROM events
+WHERE YEAR(event_date) = '2023';
 
 
 -- 문제 4
 -- 이벤트 시작 시간이 오전 9시 이전인 이벤트의 제목과 시작 시간을 조회하세요.
 
 -- 정답:
+SELECT title, start_time 
+FROM events 
+WHERE HOUR(start_time) < 9; 
 
 
 
@@ -220,13 +236,18 @@ VALUES
 -- 참석자가 50명 이상 150명 이하인 이벤트의 제목과 참석자 수를 조회하세요.
 
 -- 정답:
-
+SELECT title, attendees
+FROM events 
+WHERE attendees BETWEEN 50 AND 150;
 
 
 -- 문제 6
 -- 이벤트 날짜가 2023-10-01부터 2023-12-31 사이인 이벤트의 제목과 날짜를 조회하세요.
 
 -- 정답:
+SELECT title, event_date
+FROM events 
+WHERE event_date BETWEEN '2023-10-01' AND '2023-12-31';
 
 
 
@@ -235,13 +256,20 @@ VALUES
 -- 시작 시간이 오전 11시 이후인(오전 11시 00분 포함) 이벤트의 제목과 시작 시간을 조회하세요.
 
 -- 정답:
-
-
+SELECT title, start_time
+FROM events 
+WHERE (title LIKE '%컨퍼런스%' OR title LIKE '%컨트리뷰션%') 
+	AND HOUR(start_time) >= 11;
 
 -- 문제 8
 -- 이벤트 날짜가 2023-11-1부터 2023-12-31 사이고, 
 -- 시작 시간이 오후 2시 이후인(오후 2시 00분 포함) 이벤트의 제목과 날짜, 시작 시간을 조회하세요.
 
 -- 정답:
+SELECT title, event_date, start_time
+FROM events
+WHERE
+ (event_date BETWEEN '2023-11-01' AND '2023-12-31') 
+  AND HOUR(start_time) >= 14;
 
 
