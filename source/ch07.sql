@@ -208,8 +208,7 @@ LEFT JOIN 테이블 B ON 테이블A.조인_칼럼 = 테이블B.조인_칼럼;
 -- photos 테이블과 users 테이블 LEFT 조인 
 SELECT * 
 FROM photos p 
-LEFT JOIN users u on p.user_id = u.id;
-
+LEFT JOIN users u ON p.user_id = u.id;
 
 -- 2-2. RIGHT 조인
 -- 오른쪽 테이블(JOIN 절 테이블)의 모든 데이터에 왼쪽 테이블(FROM 절 테이블)을 조인함
@@ -217,6 +216,15 @@ LEFT JOIN users u on p.user_id = u.id;
 -- 조인 조건을 만족하지 않는 경우, NULL 값으로 채움
 -- LEFT 조인에서 기준만 바뀌고 동일하기에 거의 사용되지 않음
 
+-- 형식: 
+SELECT 컬러명1, 컬럼명2, ... 
+FROM 테이블A
+RIGHT JOIN 테이블 B ON 테이블A.조인_칼럼 = 테이블B.조인_칼럼;
+
+-- photos 테이블과 users 테이블 RIGHT 조인 
+SELECT * 
+FROM photos p 
+RIGHT JOIN users u ON p.user_id = u.id;
 
 -- 2-3. FULL 조인
 -- 두 테이블의 모든 데이터를 결합하는 조인
@@ -224,11 +232,97 @@ LEFT JOIN users u on p.user_id = u.id;
 -- LEFT 조인 + RIGHT 조인의 결과에 중복을 제거한 것(합집합)
 -- 두 테이블에 조인 컬럼 값이 같은 데이터뿐만 아니라, 한쪽 테이블에 존재하는 데이터도 모두 반환
 
+-- 실무에서는 잘 사용하지 않고, MySQL은 FULL 조인을 지원하지 않음 
+-- 형식
+SELECT 컬럼명1, 컬럼명2, ... 
+FROM 테이블A
+FULL JOIN 테이블B ON 테이블A.조인_컬럼 = 테이블B.조인_컬럼;
+
+-- 3. UNION 연산자 
+-- 두 쿼리의 결과를 하나의 테이블로 합치는 집합 연산자 
+-- SELECT 결과를 단순히 위아래로 붙이는 연산
+-- UNION을 사용하려면 반드시 지켜야 할 규칙
+-- 1) UNION으로 연결되는 모든 SELECT 문은 "컬럼 개수가 동일" 해야 하고, 
+-- 2) "각 컬럼의 자료형이 서로 호환 가능한 타입" 이어야 함 (예: 숫자는 숫자 타입끼리, 문자는 문자 타입끼리)
+
+-- 사용 예: 
+-- 대학교의 학생 정보를 재학생과 졸업생으로 별도의 테이블로 나눠서 보관한다고 가정했을 때,
+-- 새해를 맞아 모든 학생(재학중 + 졸업)에게 신년인사 이메일을 보내기 위해, 
+-- 두 테이블에 흩어져 있는 이름과 이메일을 합쳐서 하나의 전체 목록을 만들어야 한다면
+-- JOIN 으로는 해결 불가 => 이유? 두 테이블은 서로 연결된 관계가 아니라, 구조는 비슷하지만 분리된 별개의 집합이기 때문
+SELECT name, email FROM students -- 재학생
+UNION
+SELECT name, email FROM graduates; -- 졸업생
+
+-- (참고) UNION 연산을 활용하면 FULL 조인 결과를 생성 가능
+-- photos 테이블과 users 테이블 FULL 조인 = LEFT조인 + RIGHT조인 + 중복 제거 => UNION이 해줌
+(
+	SELECT *
+	FROM photos p
+	LEFT JOIN users u ON p.user_id = u.id 
+)
+UNION -- 두 쿼리의 결과 테이블을 위아래로 합치고 중복 데이터는 제거
+(
+	SELECT *
+	FROM photos p
+	RIGHT JOIN users u ON p.user_id = u.id
+);
+
+-- 4. UNION ALL 연산자 
+-- UNION과 UNION ALL의 차이 
+-- 유일한 차이점은 '중복 처리' 여부
+-- UNION: 두 결과 집합을 합친 후, 중복된 행을 제거 
+-- UNION ALL: 중복 제거 과정 없이, 두 결과 집합을 그래도 모두 합침 
+
+-- UNION과 UNION ALL 중 무엇을 쓸지는 정답이 없고 비즈니스 요구사항에 따라 다름
+-- 사용 예: '전자기기' 카테고리 상품을 한 번이라도 구매한 고객과 
+-- '도서' 카테고리 상품을 한 번이라도 구매한 고객을 대상으로 할인 쿠폰을 발송하려고 한다.
+-- 두 카테고리 모두 구매한 고객에게는 쿠폰을 중복 발송하려고 한다면 UNION ALL을 사용
+
+(
+SELECT * 
+FROM photos p 
+LEFT JOIN users u ON p.user_id = u.id
+)
+UNION ALL -- 단순히 두 쿼리의 결과 테이블을 위아래로 붙임 
+(
+SELECT * 
+FROM photos p 
+RIGHT JOIN users u ON p.user_id = u.id
+);
 
 
+-- (참고) UNION과 UNION ALL의 성능 비교
+-- UNION ALL이 UNION 보다 훨씬 빠르다.
+-- UNION: 두 결과를 합친 뒤, 중복을 제거하기 위해 데이터베이스는 추가 작업을 수행
+-- 보통 전체 결과를 정렬한 다음, 서로 인접한 행들을 비교하여 중복을 찾아내는 과정을 거침
+-- 데이터의 양이 수십만, 수백만 건이라면 이 정렬과 비교 작업은 많은 비용과 시간을 소모
+-- UNION ALL: 이런 추가 작업이 전혀 없음
+-- 그냥 첫 번째 SELECT 결과 아래에 두 번째 SELECT 결과를 가져다 붙이기만 하면 끝
 
+-- 그럼 실무에서는
+-- 1. 중복을 제거해야만 하는 명확한 요구사항이 있을 때만 UNION을 사용
+-- (예: 고유한 이메일 주소 목록, 고유한 고객 ID 목록 등)
+-- 2. 그 외의 모든 경우에는 UNION ALL을 우선적으로 사용
+-- 두 결과 집합에 중복이 발생할 수 없다는 것을 명확히 아는 경우
+-- 또는 중복이 발생해도 상관없는 경우
+-- 즉, 중복을 제거할 필요가 없다면, 항상 UNION ALL을 사용
 
+-- Quiz
+-- 3. 다음 빈칸에 들어갈 용어를 차례대로 쓰시오. (예: ㄱㄴㄷㄹㅁ)
+-- ① __________: 가장 기본적인 조인 유형으로, 두 테이블에서 조인 조건을 만족하는 튜플을 찾아 조인
+-- ② __________: 왼쪽 테이블의 모든 튜플에 대해 조인 조건을 만족하는 오른쪽 테이블의 튜플을 조인하고, 조인할 수 없는 경우 NULL 값으로 채움
+-- ③ __________: 오른쪽 테이블의 모든 튜플에 대해 조인 조건을 만족하는 왼쪽 테이블의 튜플을 조인하고, 조인할 수 없는 경우 NULL 값으로 채움
+-- ④ __________: 두 테이블 사이에서 조인이 가능한 튜플뿐만 아니라 조인 불가능한 튜플도 모두 가져오고 빈 칼럼은 NULL 값으로 채움
+-- ⑤ __________: 두 쿼리의 결과 테이블을 하나로 합침
 
+-- (ㄱ) FULL JOIN
+-- (ㄴ) INNER JOIN
+-- (ㄷ) UNION
+-- (ㄹ) RIGHT JOIN
+-- (ㅁ) LEFT JOIN
+
+-- 정답: (ㄴ) - (ㅁ) - (ㄹ) - (ㄱ) - (ㄷ)
 
 
 
