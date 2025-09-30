@@ -324,6 +324,60 @@ RIGHT JOIN users u ON p.user_id = u.id
 
 -- 정답: (ㄴ) - (ㅁ) - (ㄹ) - (ㄱ) - (ㄷ)
 
+/*
+	7.3 조인 실습: 별그램 DB
+*/ 
+-- 가장 많이 사용되는 INNER 조인과 LEFT 조인을 연습!
+
+-- 1. 특정 사용자가 올린 사진 목록 출력하기 
+-- 예: 홍팍이 업로드한 모든 사진의 파일명은? 
+SELECT 
+	filename AS 파일명, 
+    nickname AS 게시자
+FROM photos p
+JOIN users u ON p.user_id = u.id
+WHERE nickname= '홍팍';
+
+
+-- (참고) 또는 필터링을 조인과 동시에 가능
+SELECT 
+	filename AS 파일명, 
+    nickname AS 게시자
+FROM photos p
+JOIN users u 
+	ON p.user_id = u.id
+	AND nickname= '홍팍';
+    
+-- 2. 특정 사용자가 올린 사진의 좋아요 개수 
+-- 예: 홍팍이 올린 모든 사진의 좋아요 개수는? 
+SELECT COUNT(*)
+FROM users u
+JOIN photos p ON u.id = p.user_id
+JOIN likes l ON p.id = l.photo_id
+WHERE u.nickname = '홍팍';
+
+-- 3. 특정 사용자가 쓴 댓글 개수 
+-- 예: 해삼이가 작성한 모든 댓글의 개수는? 
+SELECT COUNT(*)
+FROM comments c
+JOIN users u ON u.id = c.user_id
+WHERE u.nickname = '해삼';
+
+-- 4. 모든 댓글의 본문과 해당 댓글에 달린 사진의 파일명
+SELECT body AS `댓글의 본문`, filename AS `사진의 파일명`
+FROM comments c
+LEFT JOIN photos p ON c.photo_id = p.id;
+
+-- Quiz
+-- 4. 다음 설명이 맞으면 O, 틀리면 X를 순서대로 표시하시오. (예: O, X, O, X)
+-- ① INNER 조인은 INNER 키워드를 생략할 수 있다. ( o )
+-- ② INNER 조인은 조인이 불가능한 레코드도 가져와 연결한다. ( x )
+-- ③ LEFT 조인은 왼쪽 테이블의 모든 데이터에 대해 오른쪽 테이블에 조인 조건을 만족하는 데이터를 가져와 연결하고 
+--   오른쪽 테이블에 해당하는 데이터가 없으면 NULL 값으로 채운다. ( o )
+-- ④ 조인 조건에 AND 연산자를 사용하면 조인과 동시에 데이터 필터링을 할 수 있다. ( o )
+
+-- 정답: O-X-O-O
+
 
 
 
