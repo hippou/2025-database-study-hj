@@ -501,11 +501,36 @@ HAVING SUM(amount)>= 30000; -- 5)그룹 필터링을 하고
 -- 판매수량이 동일할 때는 상품명 순으로 정렬
 SELECT 
 	name AS '상품명', 
-    SUM(count) AS '판매수량'
-FROM order_details o
-JOIN products p ON p.id = o.product_id
-JOIN orders ord ON ord.id = o.order_id
-WHERE status = '배송 완료' 
+    SUM(count) AS '판매수량' -- 6번
+FROM order_details od -- 1번
+JOIN products p ON p.id = od.product_id -- 2번
+-- 1)orders 테이블에 장바구니 정보도 함께 저장되어 이를 구분하기 위해 JOIN을 한번 더하고
+JOIN orders o ON o.id = od.order_id -- 3번
+WHERE status = '배송 완료' -- 2) 배송 완료 레코드만 필터링 --4번
+GROUP BY p.id,p.name -- 두가지로 엄격하게 그룹핑 --5번
+ORDER BY SUM(count) DESC, p.name -- 7번
+LIMIT 3;  -- 8번 (경계에서 잘릴 경우 DB 엔진 내부 구현에 따라 가져옴)
+
+-- Quiz
+-- 3. market DB에서 배송 완료된 상품별로 누적 매출 상위 3개 상품 정보를 조회하고자 한다.
+-- 다음 쿼리의 빈칸을 채워 완성하시오.
+
+-- ------------------------------
+-- 상품명              | 누적 매출
+-- ------------------------------
+-- 무항생제 특란 20구    | 28800
+-- 수제 크림 치즈 200g  | 18000
+-- 샐러드 키트 6봉      | 17800
+
+SELECT 
+	name AS '상품명',
+	SUM(① ___price*count___) AS '누적 매출'
+FROM products p
+JOIN order_details od ON p.id = od.product_id
+JOIN orders o ON od.order_id = o.id
+			AND status = '배송 완료'
 GROUP BY name
-ORDER BY SUM(count) DESC, name
-LIMIT 3;  
+ORDER BY SUM(② ___price*count____) DESC
+LIMIT 3;
+
+-- 정답: price*count, price*count
